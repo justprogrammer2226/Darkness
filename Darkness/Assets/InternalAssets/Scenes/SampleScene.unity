@@ -112,7 +112,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &346823249
+--- !u!1 &382571014
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -120,9 +120,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 346823252}
-  - component: {fileID: 346823251}
-  - component: {fileID: 346823250}
+  - component: {fileID: 382571017}
+  - component: {fileID: 382571016}
+  - component: {fileID: 382571015}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -130,13 +130,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &346823250
+--- !u!114 &382571015
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 346823249}
+m_GameObject: {fileID: 382571014}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 1077351063, guid: f70555f144d8491a825f0804e09c671c, type: 3}
@@ -149,13 +149,13 @@ MonoBehaviour:
   m_InputActionsPerSecond: 10
   m_RepeatDelay: 0.5
   m_ForceModuleActive: 0
---- !u!114 &346823251
+--- !u!114 &382571016
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 346823249}
+  m_GameObject: {fileID: 382571014}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -619905303, guid: f70555f144d8491a825f0804e09c671c, type: 3}
@@ -164,19 +164,19 @@ MonoBehaviour:
   m_FirstSelected: {fileID: 0}
   m_sendNavigationEvents: 1
   m_DragThreshold: 10
---- !u!4 &346823252
+--- !u!4 &382571017
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 346823249}
+  m_GameObject: {fileID: 382571014}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &519420028
 GameObject:
@@ -189,6 +189,7 @@ GameObject:
   - component: {fileID: 519420032}
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
+  - component: {fileID: 519420030}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -204,6 +205,32 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_Enabled: 1
+--- !u!114 &519420030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d866f242bf7bcb24790e05ab9de89bc1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _analogGlitchShader: {fileID: 4800000, guid: 4f5bff558e2b0ae48a149f937b83ad38, type: 3}
+  _analogScanLineJitter: 0
+  _analogVerticalJump: 0
+  _analogHorizontalShake: 0
+  _analogColorDrift: 0
+  _digitalGlitchShader: {fileID: 4800000, guid: 6258b94c6202b4f4b8f4f64175304fee,
+    type: 3}
+  _digitalGlitchIntensity: 0
+  _glitchShader: {fileID: 4800000, guid: 5c589a61463850642b7e12651e683925, type: 3}
+  _displacementMap: {fileID: 0}
+  _glitchIntensity: 0
+  _glitchFlipIntensity: 0
+  _glitchColorIntensity: 0
+  invertColorShader: {fileID: 4800000, guid: f70c205a948830f41af19c7613285010, type: 3}
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
