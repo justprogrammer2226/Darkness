@@ -1,32 +1,30 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Text))]
 public class TypeWriterEffect : MonoBehaviour
 {
+    [TextArea(2, 5)] public string text;
     [Range(0, 1)] public float delay;
 
     private Text _text;
-    private string _message;
 
-    private void Awake()
+    private void Start()
     {
         _text = GetComponent<Text>();
-        _message = _text.text;
-        _text.text = "";
-        StartCoroutine(PlayText());
+        Type();
     }
 
-    private IEnumerator PlayText()
+    public void Type() => StartCoroutine(TypeText());
+
+    private IEnumerator TypeText()
     {
-        Debug.Log("Старт");
-        foreach (char c in _message)
+        _text.text = "";
+        foreach (char c in text)
         {
             _text.text += c;
             yield return new WaitForSeconds(delay);
         }
-        Debug.Log("Конец");
     }
 }

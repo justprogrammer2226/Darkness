@@ -8,13 +8,14 @@ public enum MovementState
     Jump
 }
 
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Animator))]
 public class CharacterController2D : MonoBehaviour
 {
     [Header("Settings")]
     public float moveSpeed;
     public float jumpForce;
     public Transform groundChecker;
-    public float checkRadius;
     public Vector2 checkSize;
     public LayerMask whatIsGround;
     [Range(0, 1)] public float smoothOfStartEndMoving;

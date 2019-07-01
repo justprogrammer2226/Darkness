@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class ImageEffectsHandler : MonoBehaviour
 {
@@ -105,7 +103,7 @@ public class ImageEffectsHandler : MonoBehaviour
     private GlitchEffect _glitchEffect;
     private InvertColorEffect _invertColorEffect;
 
-    private void Awake()
+    private void Start()
     {
         if(instance == null) instance = this;
 
