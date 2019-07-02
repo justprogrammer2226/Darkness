@@ -1,42 +1,48 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
 
 [RequireComponent(typeof(BoxCollider2D))]
-public class Lever : MonoBehaviour
+public abstract class Lever : MonoBehaviour
 {
+    [Header("Settings")]
     public GameObject stick;
-    public bool isActive;
+
+    public bool singleActivation;
+    public bool canDeactivate;
     public float speed;
 
-    private void Update()
+    public Vector3 activateAngle;
+    public Vector3 deactivateAngle;
+
+    public abstract bool IsActive { get; protected set; }
+
+    protected bool _wasActivation;
+    protected Action _actionWhenActivated, _actionWhenDeactivated;
+    protected Quaternion _targetAngle;
+
+    public void Activate()
     {
-        if(isActive)
+        if((singleActivation && !_wasActivation) || !singleActivation)
         {
-            stick.transform.rotation = Quaternion.RotateTowards(stick.transform.rotation, Quaternion.Euler(0, 0, -40), speed * Time.deltaTime);
-        }
-        else
-        {
-            stick.transform.rotation = Quaternion.RotateTowards(stick.transform.rotation, Quaternion.Euler(0, 0, 40), speed * Time.deltaTime);
+            IsActive = true;
+            _actionWhenActivated?.Invoke();
+            _targetAngle = Quaternion.Euler(activateAngle);
+            _wasActivation = true;
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D col)
+    public void Deactivate()
     {
-        if(col.tag == "Player")
+        if(canDeactivate)
         {
-            Debug.Log("ОТРАБОТАЛО");
-            LeverInteraction leverInteraction = col.gameObject.GetComponent<LeverInteraction>();
-            leverInteraction.currentLever = this;
+            IsActive = false;
+            _actionWhenDeactivated?.Invoke();
+            _targetAngle = Quaternion.Euler(deactivateAngle);
         }
     }
 
-    private void OnTriggerExit2D(Collider2D col)
+    public void MoveLever()
     {
-        if (col.tag == "Player")
-        {
-            LeverInteraction leverInteraction = col.gameObject.GetComponent<LeverInteraction>();
-            leverInteraction.currentLever = null;
-        }
+        stick.transform.rotation = Quaternion.RotateTowards(stick.transform.rotation, _targetAngle, speed * Time.deltaTime);
     }
 }

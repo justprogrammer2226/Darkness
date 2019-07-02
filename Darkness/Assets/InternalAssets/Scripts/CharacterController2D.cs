@@ -93,4 +93,20 @@ public class CharacterController2D : MonoBehaviour
     {
         GetComponent<SpriteRenderer>().flipX = isFlip;
     }
+
+    private void OnCollisionEnter2D(Collision2D col)
+    {
+        if(col.gameObject.tag == "MovingPlatform")
+        {
+            transform.SetParent(col.transform);
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D col)
+    {
+        if (col.gameObject.tag == "MovingPlatform")
+        {
+            transform.SetParent(null);
+        }
+    }
 }
