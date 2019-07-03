@@ -25,20 +25,20 @@ public class CharacterController2D : MonoBehaviour
     [SerializeField] private bool _isGrounded = false;
     [SerializeField] private float _movementDirection;
 
-    private Rigidbody2D rb2d;
-    private Animator anim;
+    private Rigidbody2D _rb2d;
+    private Animator _anim;
 
     private void Start()
     {
-        rb2d = gameObject.GetComponent<Rigidbody2D>();
-        anim = GetComponent<Animator>();
+        _rb2d = gameObject.GetComponent<Rigidbody2D>();
+        _anim = GetComponent<Animator>();
     }
 
     private void Update()
     {
         _isGrounded = Physics2D.OverlapCapsule(groundChecker.position, checkSize, CapsuleDirection2D.Horizontal, 0, whatIsGround);
-        anim.SetBool("Ground", _isGrounded);
-        anim.SetFloat("Speed", Mathf.Abs(_movementDirection));
+        _anim.SetBool("Ground", _isGrounded);
+        _anim.SetFloat("Speed", Mathf.Abs(_movementDirection));
 
 #if UNITY_EDITOR
         if (Input.GetKey(KeyCode.Space)) Jump();
@@ -62,7 +62,7 @@ public class CharacterController2D : MonoBehaviour
             if (_isGrounded) _movementState = MovementState.Idle;
         }
 
-        rb2d.velocity = new Vector2(_movementDirection * moveSpeed, Mathf.Clamp(rb2d.velocity.y, -jumpForce, jumpForce));
+        _rb2d.velocity = new Vector2(_movementDirection * moveSpeed, Mathf.Clamp(_rb2d.velocity.y, -jumpForce, jumpForce));
     }
 
     public void Jump()
@@ -70,7 +70,7 @@ public class CharacterController2D : MonoBehaviour
         if(_isGrounded)
         {
             _movementState = MovementState.Jump;
-            rb2d.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            _rb2d.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
         }
     }
 

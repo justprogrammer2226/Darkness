@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class LeverToMovingPlatform : Lever
+public class LeverForMovingPlatform : Lever
 {
     public MovingPlatform movingPlatform;
 
@@ -17,6 +17,11 @@ public class LeverToMovingPlatform : Lever
         _actionWhenActivated = () =>
         {
             movingPlatform.isMoving = true;
+        };
+
+        _actionWhenDeactivated = () =>
+        {
+            movingPlatform.isMoving = false;
         };
     }
 
