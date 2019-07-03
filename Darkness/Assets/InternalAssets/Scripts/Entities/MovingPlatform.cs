@@ -37,7 +37,8 @@ public class MovingPlatform : MonoBehaviour
                 _targetPosition = firstPosition.position;
             }
 
-            _currentPosition = Vector3.SmoothDamp(transform.position, _targetPosition, ref _velocity, smoothTime * Time.deltaTime);
+            //_currentPosition = Vector3.SmoothDamp(transform.position, _targetPosition, ref _velocity, smoothTime * Time.deltaTime);
+            _currentPosition = Vector3.MoveTowards(transform.position, _targetPosition, smoothTime * Time.deltaTime);
             transform.position = _currentPosition;
         }
     }

@@ -46,8 +46,14 @@ public class CameraFollow2D : MonoBehaviour
     private void CalculateHorizontalMovementDirection(ref HorizontalMovement currentHorizontalMovement)
     {
         _currentX = player.position.x;
-        if (_currentX > _lastX) currentHorizontalMovement = HorizontalMovement.Right;
-        else if (_currentX < _lastX) currentHorizontalMovement = HorizontalMovement.Left;
+        if (_currentX > _lastX && Mathf.Abs(_currentX - _lastX) > 0.0001)
+        {
+            currentHorizontalMovement = HorizontalMovement.Right;
+        }
+        else if(_currentX < _lastX && Mathf.Abs(_currentX - _lastX) > 0.0001)
+        {
+            currentHorizontalMovement = HorizontalMovement.Left;
+        }
         _lastX = player.position.x;
     }
 }
