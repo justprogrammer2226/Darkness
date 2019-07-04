@@ -21,13 +21,16 @@ public class CharacterController2D : MonoBehaviour
     public LayerMask whatIsMovingPlatform;
     [Range(0, 1)] public float smoothOfStartEndMoving;
 
+    public GameObject dustAfterJump;
+
     [Header("Debug")]
     [SerializeField] private MovementState _movementState;
-    [SerializeField] private bool _isGrounded = false;
+    [SerializeField] private bool _isGrounded;
     [SerializeField] private float _movementDirection;
 
     private Rigidbody2D _rb2d;
     private Animator _anim;
+    private bool _lastIsGrounded;
 
     private void Start()
     {
@@ -43,11 +46,16 @@ public class CharacterController2D : MonoBehaviour
         _anim.SetBool("Ground", _isGrounded);
         _anim.SetFloat("Speed", Mathf.Abs(_movementDirection));
 
+        if (_isGrounded && !_lastIsGrounded)
+        {
+            Destroy(Instantiate(dustAfterJump, new Vector3(groundChecker.position.x, groundChecker.position.y - 0.5f, groundChecker.position.z), dustAfterJump.transform.rotation), 1);
+        }
+
 #if UNITY_EDITOR
         if (Input.GetKey(KeyCode.Space) && _isGrounded) Jump();
         if (Input.GetKey(KeyCode.A)) Left();
         if (Input.GetKey(KeyCode.D)) Right();
-        if(!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D)) Idle();
+        if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D)) Idle();
 #endif
 
         if (_movementDirection < 0)
@@ -77,6 +85,8 @@ public class CharacterController2D : MonoBehaviour
         }
 
         _rb2d.velocity = new Vector2(_movementDirection * moveSpeed, Mathf.Clamp(_rb2d.velocity.y, -jumpForce, jumpForce));
+
+        _lastIsGrounded = _isGrounded;
     }
 
     public void Jump()
