@@ -334,7 +334,7 @@ MonoBehaviour:
   firstPosition: {fileID: 356100649}
   secondPosition: {fileID: 2089079957}
   smoothTime: 5
-  isMoving: 1
+  isMoving: 0
 --- !u!1 &164965307
 GameObject:
   m_ObjectHideFlags: 0
@@ -1068,7 +1068,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   smoothOfStartEndMoving: 1
-  dustAfterJump: {fileID: 4674341909981196507, guid: 1e9931d0cbb2eee4091814c5894537a4,
+  dustAfterJump: {fileID: 6045109830429387860, guid: 598d3eb471622614bba6e491980a6c01,
     type: 3}
   _movementState: 1
   _isGrounded: 1
@@ -2173,7 +2173,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2089079956}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 24.8, y: 2.5, z: 0}
+  m_LocalPosition: {x: 4.82, y: 5.29, z: 0}
   m_LocalScale: {x: 0.38588, y: 0.04, z: 1}
   m_Children: []
   m_Father: {fileID: 1578595721}

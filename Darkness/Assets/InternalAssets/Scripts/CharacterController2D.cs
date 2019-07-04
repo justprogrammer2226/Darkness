@@ -40,16 +40,16 @@ public class CharacterController2D : MonoBehaviour
 
     private void Update()
     {
+        // Check if there is ground below the player.
         _isGrounded = Physics2D.OverlapCapsule(groundChecker.position, checkSize, CapsuleDirection2D.Horizontal, 0, whatIsGround);
         if(!_isGrounded) _isGrounded = Physics2D.OverlapCapsule(groundChecker.position, checkSize, CapsuleDirection2D.Horizontal, 0, whatIsMovingPlatform);
 
+        // Manage animation.
         _anim.SetBool("Ground", _isGrounded);
         _anim.SetFloat("Speed", Mathf.Abs(_movementDirection));
 
-        if (_isGrounded && !_lastIsGrounded)
-        {
-            Destroy(Instantiate(dustAfterJump, new Vector3(groundChecker.position.x, groundChecker.position.y - 0.5f, groundChecker.position.z), dustAfterJump.transform.rotation), 1);
-        }
+        // Spawn dust if necessary.
+        if (_isGrounded && !_lastIsGrounded) SpawnDust();
 
 #if UNITY_EDITOR
         if (Input.GetKey(KeyCode.Space) && _isGrounded) Jump();
@@ -58,6 +58,7 @@ public class CharacterController2D : MonoBehaviour
         if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D)) Idle();
 #endif
 
+        // Calculate which way the player moves.
         if (_movementDirection < 0)
         {
             Flip(true);
@@ -73,19 +74,15 @@ public class CharacterController2D : MonoBehaviour
             if (_isGrounded) _movementState = MovementState.Idle;
         }
 
+        // Interact with moving platforms if necessary.
         Collider2D col2d = Physics2D.OverlapCapsule(groundChecker.position, checkSize, CapsuleDirection2D.Horizontal, 0, whatIsMovingPlatform);
-        if (col2d != null && _movementState == MovementState.Idle)
-        {
-            Debug.Log("Поставили");
-            transform.SetParent(col2d.transform);
-        }
-        else
-        {
-            transform.SetParent(null);
-        }
+        if (col2d != null && _movementState == MovementState.Idle) transform.SetParent(col2d.transform);
+        else transform.SetParent(null);
 
+        // Move player.
         _rb2d.velocity = new Vector2(_movementDirection * moveSpeed, Mathf.Clamp(_rb2d.velocity.y, -jumpForce, jumpForce));
 
+        // Remember _isGrounded variable.
         _lastIsGrounded = _isGrounded;
     }
 
@@ -113,5 +110,10 @@ public class CharacterController2D : MonoBehaviour
     private void Flip(bool isFlip)
     {
         GetComponent<SpriteRenderer>().flipX = isFlip;
+    }
+
+    private void SpawnDust()
+    {
+        Destroy(Instantiate(dustAfterJump, new Vector3(groundChecker.position.x, groundChecker.position.y - 0.5f, groundChecker.position.z), dustAfterJump.transform.rotation), 2f);
     }
 }

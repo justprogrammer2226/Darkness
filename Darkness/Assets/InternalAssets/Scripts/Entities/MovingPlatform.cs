@@ -28,18 +28,16 @@ public class MovingPlatform : MonoBehaviour
     {
         if(isMoving)
         {
-            if (_currentPosition == firstPosition.position)
-            {
-                _targetPosition = secondPosition.position;
-            }
-            else if (_currentPosition == secondPosition.position)
-            {
-                _targetPosition = firstPosition.position;
-            }
-
+            CalculateTargetPosition();
             _currentPosition = Vector3.MoveTowards(transform.position, _targetPosition, smoothTime * Time.deltaTime);
             transform.position = _currentPosition;
         }
+    }
+
+    private void CalculateTargetPosition()
+    {
+        if (_currentPosition == firstPosition.position) _targetPosition = secondPosition.position;
+        else if (_currentPosition == secondPosition.position) _targetPosition = firstPosition.position;
     }
 
     private void OnDrawGizmos()

@@ -8,8 +8,8 @@ public class LeverInteraction : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.E) && currentLever != null)
         {
-            if(!currentLever.IsActive) currentLever.Activate();
-            else currentLever.Deactivate();
+            if(currentLever.IsActive) currentLever.Deactivate();
+            else currentLever.Activate();
         }
     }
 }
