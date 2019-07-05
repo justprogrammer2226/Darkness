@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public enum MovementState
 {
@@ -20,7 +21,6 @@ public class CharacterController2D : MonoBehaviour
     public LayerMask whatIsGround;
     public LayerMask whatIsMovingPlatform;
     [Range(0, 1)] public float smoothOfStartEndMoving;
-
     public GameObject dustAfterJump;
 
     [Header("Debug")]
@@ -31,11 +31,14 @@ public class CharacterController2D : MonoBehaviour
     private Rigidbody2D _rb2d;
     private Animator _anim;
     private bool _lastIsGrounded;
+    private Vector2 _spawnPoint;
 
     private void Start()
     {
         _rb2d = gameObject.GetComponent<Rigidbody2D>();
-        _anim = GetComponent<Animator>();
+        _anim = gameObject.GetComponent<Animator>();
+
+        _spawnPoint = gameObject.transform.position;
     }
 
     private void Update()
@@ -115,5 +118,15 @@ public class CharacterController2D : MonoBehaviour
     private void SpawnDust()
     {
         Destroy(Instantiate(dustAfterJump, new Vector3(groundChecker.position.x, groundChecker.position.y - 0.5f, groundChecker.position.z), dustAfterJump.transform.rotation), 2f);
+    }
+
+    private void OnCollisionEnter2D(Collision2D col)
+    {
+        if(col.gameObject.tag == "Saw")
+        {
+            Debug.Log("ЗАпуск");
+            gameObject.transform.position = _spawnPoint;
+            ImageEffectsHandler.instance.StartCoroutine(ImageEffectsHandler.instance.ActivateGlitch());
+        }
     }
 }

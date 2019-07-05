@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class ImageEffectsHandler : MonoBehaviour
 {
@@ -127,26 +128,28 @@ public class ImageEffectsHandler : MonoBehaviour
 
         _invertColorEffect = gameObject.AddComponent<InvertColorEffect>();
         InvertColorShader = invertColorShader;
+
+        _invertColorEffect.enabled = false;
     }
 
     private void Update()
     {
-        AnalogGlitchShader = _analogGlitchShader;
-        AnalogScanLineJitter = _analogScanLineJitter;
-        AnalogVerticalJump = _analogVerticalJump;
-        AnalogHorizontalShake = _analogHorizontalShake;
-        AnalogColorDrift = _analogColorDrift;
+        //AnalogGlitchShader = _analogGlitchShader;
+        //AnalogScanLineJitter = _analogScanLineJitter;
+        //AnalogVerticalJump = _analogVerticalJump;
+        //AnalogHorizontalShake = _analogHorizontalShake;
+        //AnalogColorDrift = _analogColorDrift;
 
-        DigitalGlitchShader = _digitalGlitchShader;
-        DigitalGlitchIntensity = _digitalGlitchIntensity;
+        //DigitalGlitchShader = _digitalGlitchShader;
+        //DigitalGlitchIntensity = _digitalGlitchIntensity;
 
-        GlitchShader = _glitchShader;
-        GlitchDisplacementMap = _displacementMap;
-        GlitchIntensity = _glitchIntensity;
-        GlitchFlipIntensity = _glitchFlipIntensity;
-        GlitchColorIntensity = _glitchColorIntensity;
+        //GlitchShader = _glitchShader;
+        //GlitchDisplacementMap = _displacementMap;
+        //GlitchIntensity = _glitchIntensity;
+        //GlitchFlipIntensity = _glitchFlipIntensity;
+        //GlitchColorIntensity = _glitchColorIntensity;
 
-        InvertColorShader = invertColorShader;
+        //InvertColorShader = invertColorShader;
     }
 
     public void AnalogGlitchEffectEnabled(bool enabled) => _analogGlitchEffect.enabled = enabled;
@@ -156,4 +159,21 @@ public class ImageEffectsHandler : MonoBehaviour
     public void GlitchEffectEnabled(bool enabled) => _glitchEffect.enabled = enabled;
 
     public void InvertColorEffectEnabled(bool enabled) => _invertColorEffect.enabled = enabled;
+
+    public IEnumerator ActivateGlitch()
+    {
+        AnalogScanLineJitter = 1;
+
+        while (AnalogScanLineJitter != 1)
+        {
+            AnalogScanLineJitter += 0.1f;
+            yield return new WaitForSeconds(0.025f);
+        }
+
+        while (AnalogScanLineJitter != 0)
+        {
+            AnalogScanLineJitter -= 0.1f;
+            yield return new WaitForSeconds(0.025f);
+        }
+    }
 }
