@@ -117,14 +117,14 @@ public class CharacterController2D : MonoBehaviour
 
     private void SpawnDust()
     {
-        Destroy(Instantiate(dustAfterJump, new Vector3(groundChecker.position.x, groundChecker.position.y - 0.5f, groundChecker.position.z), dustAfterJump.transform.rotation), 2f);
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, -transform.up, float.MaxValue, whatIsGround.value | whatIsMovingPlatform.value);
+        if (hit) Destroy(Instantiate(dustAfterJump, hit.point, dustAfterJump.transform.rotation), 2f);
     }
 
     private void OnCollisionEnter2D(Collision2D col)
     {
-        if(col.gameObject.tag == "Saw")
+        if(col.gameObject.tag == "Saw" || col.gameObject.tag == "Spike" || col.gameObject.tag == "Abyss")
         {
-            Debug.Log("ЗАпуск");
             gameObject.transform.position = _spawnPoint;
             ImageEffectsHandler.instance.StartCoroutine(ImageEffectsHandler.instance.ActivateGlitch());
         }
