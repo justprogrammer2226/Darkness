@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public enum MovementState
 {
@@ -22,6 +23,10 @@ public class CharacterController2D : MonoBehaviour
     public LayerMask whatIsMovingPlatform;
     [Range(0, 1)] public float smoothOfStartEndMoving;
     public GameObject dustAfterJump;
+
+    public Image[] movementButtons;
+    public Sprite activeButtonSprite;
+    public Sprite inactiveButtonSprite;
 
     [Header("Debug")]
     [SerializeField] private MovementState _movementState;
@@ -55,7 +60,7 @@ public class CharacterController2D : MonoBehaviour
         if (_isGrounded && !_lastIsGrounded) SpawnDust();
 
 #if UNITY_EDITOR
-        if (Input.GetKey(KeyCode.Space) && _isGrounded) Jump();
+        if (Input.GetKey(KeyCode.Space)) Jump();
         if (Input.GetKey(KeyCode.A)) Left();
         if (Input.GetKey(KeyCode.D)) Right();
         if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D)) Idle();
@@ -91,23 +96,32 @@ public class CharacterController2D : MonoBehaviour
 
     public void Jump()
     {
-        _movementState = MovementState.Jump;
-        _rb2d.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+        if (_isGrounded)
+        {
+            _movementState = MovementState.Jump;
+            _rb2d.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+        }
     }
 
     public void Left()
     {
-        _movementDirection = Mathf.MoveTowards(_movementDirection, -1, smoothOfStartEndMoving);
+        _movementDirection = -1;
     }
 
     public void Right()
     {
-        _movementDirection = Mathf.MoveTowards(_movementDirection, 1, smoothOfStartEndMoving);
+        _movementDirection = 1;
     }
 
     public void Idle()
     {
-        _movementDirection = Mathf.MoveTowards(_movementDirection, 0, smoothOfStartEndMoving);
+        _movementDirection = 0;
+    }
+
+    public void ChangeButtonSprite(int index)
+    {
+        if (movementButtons[index].sprite == activeButtonSprite) movementButtons[index].sprite = inactiveButtonSprite;
+        else movementButtons[index].sprite = activeButtonSprite;
     }
 
     private void Flip(bool isFlip)
