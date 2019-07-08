@@ -13,6 +13,7 @@ public abstract class Lever : MonoBehaviour
 
     public Vector3 activateAngle;
     public Vector3 deactivateAngle;
+    public GameObject interactiveSprite;
 
     public abstract bool IsActive { get; protected set; }
 

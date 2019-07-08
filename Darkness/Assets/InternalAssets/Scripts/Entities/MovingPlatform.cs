@@ -6,7 +6,6 @@ public class MovingPlatform : MonoBehaviour
     public float smoothTime;
     public bool isMoving = true;
 
-    private Vector3 _velocity = Vector3.zero;
     private Vector3 _targetPosition, _currentPosition;
 
     private void Start()

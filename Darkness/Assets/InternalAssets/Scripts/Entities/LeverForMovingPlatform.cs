@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class LeverForMovingPlatform : Lever
+public class LeverForMovingPlatform : Lever, IPointerDownHandler
 {
     public MovingPlatform movingPlatform;
 
@@ -36,6 +37,7 @@ public class LeverForMovingPlatform : Lever
         {
             LeverInteraction leverInteraction = col.gameObject.GetComponent<LeverInteraction>();
             leverInteraction.currentLever = this;
+            if((singleActivation && !_wasActivation) || !singleActivation || (IsActive && canDeactivate)) interactiveSprite.SetActive(true);
         }
     }
 
@@ -45,6 +47,27 @@ public class LeverForMovingPlatform : Lever
         {
             LeverInteraction leverInteraction = col.gameObject.GetComponent<LeverInteraction>();
             leverInteraction.currentLever = null;
+            interactiveSprite.SetActive(false);
+        }
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        if(interactiveSprite.activeSelf)
+        {
+            if (IsActive)
+            {
+                Deactivate();
+                if (singleActivation && _wasActivation)
+                {
+                    interactiveSprite.SetActive(false);
+                }
+            }
+            else
+            {
+                Activate();
+                if (!canDeactivate) interactiveSprite.SetActive(false);
+            }
         }
     }
 }
