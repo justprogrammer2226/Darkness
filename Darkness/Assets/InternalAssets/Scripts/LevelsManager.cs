@@ -19,6 +19,9 @@ public class LevelsManager : MonoBehaviour
     [SerializeField] private int numberOfOpenLevels;
     [SerializeField] private int numberOfLevels;
 
+    public Color activeTextColor;
+    public Color inactiveTextColor;
+
     public Button[] buttons;
 
     private void Awake()
@@ -39,12 +42,12 @@ public class LevelsManager : MonoBehaviour
             if (i < numberOfOpenLevels)
             {
                 buttons[levelIndex].interactable = true;
-                buttons[levelIndex].gameObject.GetComponentInChildren<TextMeshProUGUI>().color = new Color(20f / 255f, 69f / 255f, 101f / 255f, 1f);
+                buttons[levelIndex].gameObject.GetComponentInChildren<TextMeshProUGUI>().color = activeTextColor;
             }
             else
             {
                 buttons[levelIndex].interactable = false;
-                buttons[levelIndex].gameObject.GetComponentInChildren<TextMeshProUGUI>().color = new Color(0f, 32f / 255f, 53f / 255f, 1f);
+                buttons[levelIndex].gameObject.GetComponentInChildren<TextMeshProUGUI>().color = inactiveTextColor;
             }
         }
     }
@@ -70,11 +73,8 @@ public class LevelsManager : MonoBehaviour
             PlayerPrefs.DeleteKey("numberOfOpenLevels");
             PlayerPrefs.DeleteKey("numberOfLevels");
             LoadInfo();
-            SaveInfo();
         }
     }
-
-    public Scene scene;
 
     /// <summary> This method should call when completing any level. </summary>
     public void CompleteLevel()
@@ -116,15 +116,15 @@ public class LevelsManager : MonoBehaviour
         indexCurrentLevel = PlayerPrefs.GetInt("indexCurrentLevel", 0);
         // Set the value to 0, because only the first level is available to us.
         numberOfOpenLevels = PlayerPrefs.GetInt("numberOfOpenLevels", 1);
-        // Set the value to 0, because i dont know :(
-        numberOfLevels = PlayerPrefs.GetInt("numberOfLevels", buttons == null || buttons.Length != 0 ? buttons.Length : 0);
+        // Set the value to 0 of buttons length.
+        numberOfLevels = PlayerPrefs.GetInt("numberOfLevels", buttons != null && buttons.Length != 0 ? buttons.Length : 0);
     }
 
     private void SaveInfo()
     {
         PlayerPrefs.SetInt("numberOfOpenLevels", numberOfOpenLevels);
         PlayerPrefs.SetInt("indexCurrentLevel", indexCurrentLevel);
-        if(buttons == null || buttons.Length != 0) PlayerPrefs.SetInt("numberOfLevels", buttons.Length);
+        if(buttons != null && buttons.Length != 0) PlayerPrefs.SetInt("numberOfLevels", buttons.Length);
         PlayerPrefs.Save();
     }
 }
