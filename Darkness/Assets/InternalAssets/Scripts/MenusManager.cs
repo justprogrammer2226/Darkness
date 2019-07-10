@@ -1,14 +1,15 @@
 ﻿using UnityEngine;
 
-class MenuManager : MonoBehaviour
+class MenusManager : MonoBehaviour
 {
-    public static MenuManager instance = null;
+    public static MenusManager instance = null;
 
     public GameObject startMenu;
     public GameObject optionsMenu;
 
     private void Awake()
     {
+        if (instance != null) Destroy(gameObject);
         instance = this;
     }
 
