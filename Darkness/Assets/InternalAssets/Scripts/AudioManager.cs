@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,22 +24,26 @@ public class AudioManager : MonoBehaviour
 
     private void Awake()
     {
+        if (instance != null) Destroy(gameObject);
         instance = this;
     }
 
     private void Start()
-    {
-        if(PlayerPrefs.HasKey("musicVolume") && PlayerPrefs.HasKey("sfxVolume"))
+    { 
+        if (musicSlider != null && sfxSlider != null)
         {
-            musicSlider.value = PlayerPrefs.GetFloat("musicVolume");
-            sfxSlider.value = PlayerPrefs.GetFloat("sfxVolume");
+            if (PlayerPrefs.HasKey("musicVolume") && PlayerPrefs.HasKey("sfxVolume"))
+            {
+                musicSlider.value = PlayerPrefs.GetFloat("musicVolume");
+                sfxSlider.value = PlayerPrefs.GetFloat("sfxVolume");
+            }
+
+            musicSlider.onValueChanged.AddListener((value) => SetMusicVolume(value));
+            sfxSlider.onValueChanged.AddListener((value) => SetSfxVolume(value));
+
+            _lastMusicVolume = musicSlider.value;
+            _lastSfxVolume = sfxSlider.value;
         }
-
-        musicSlider.onValueChanged.AddListener((value) => SetMusicVolume(value));
-        sfxSlider.onValueChanged.AddListener((value) => SetSfxVolume(value));
-
-        _lastMusicVolume = musicSlider.value;
-        _lastSfxVolume = sfxSlider.value;
     }
 
     private void SetMusicVolume(float volume)

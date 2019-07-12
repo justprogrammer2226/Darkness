@@ -34,4 +34,11 @@ class MenusManager : MonoBehaviour
         optionsMenu.SetActive(false);
         levelsMenu.SetActive(true);
     }
+
+    public void DeactivateAllMenus()
+    {
+        startMenu.SetActive(false);
+        optionsMenu.SetActive(false);
+        levelsMenu.SetActive(false);
+    }
 }

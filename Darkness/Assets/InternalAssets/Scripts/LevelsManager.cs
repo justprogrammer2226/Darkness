@@ -1,28 +1,33 @@
 ﻿using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary> Manages all work on the transition between levels. </summary>
-/// <remarks>
-/// For the script to work correctly,
-/// it is necessary that all levels be placed in this order in the “Scenes in build”:
-/// 0 - Start menu,
-/// 1 - n - All levels.
-/// IMPORTANT!!! SCRIPT WORKS ONLY WITH TEXT MESH PRO!!!
-/// </remarks>
+/// <remarks> IMPORTANT!!! The level scenes must be in order. </remarks>
 public class LevelsManager : MonoBehaviour
 {
     public static LevelsManager instance;
 
-    [SerializeField] private int indexCurrentLevel;
-    [SerializeField] private int numberOfOpenLevels;
-    [SerializeField] private int numberOfLevels;
-
+    [Header("Colors for text")]
     public Color activeTextColor;
     public Color inactiveTextColor;
 
-    public Button[] buttons;
+    [Header("Indexes from 'Scenes in build'")]
+    public int startSceneIndex;
+    public int firstLevelIndex;
+
+    [Header("Level buttons")]
+    public Button[] levelButtons;
+
+    [Header("Debug")]
+    // The index of the current level betweeb 0 and levelButtons.Length - 1.
+    // This is not an index in 'Scenes in build'.
+    [SerializeField] private int currentLevelIndex;
+    // Just number of open levels.
+    [SerializeField] private int numberOfOpenLevels;
+    // We have to memorize the number of open levels.
+    // Because when we switch to another scene, the array of buttons will be reset.
+    [SerializeField] private int numberOfLevels;
 
     private void Awake()
     {
@@ -34,20 +39,23 @@ public class LevelsManager : MonoBehaviour
     {
         LoadInfo();
 
-        for (int i = 0; i < buttons.Length; i++)
-        {
-            int levelIndex = i;
-            buttons[levelIndex].onClick.AddListener(() => ToLevel(levelIndex + 1));
+        if (levelButtons == null) return;
 
-            if (i < numberOfOpenLevels)
+        for (int i = 0; i < levelButtons.Length; i++)
+        {
+            int temp = i;
+
+            levelButtons[temp].onClick.AddListener(() => ToLevel(temp));
+
+            if (temp < numberOfOpenLevels)
             {
-                buttons[levelIndex].interactable = true;
-                buttons[levelIndex].gameObject.GetComponentInChildren<TextMeshProUGUI>().color = activeTextColor;
+                levelButtons[temp].interactable = true;
+                levelButtons[temp].gameObject.GetComponentInChildren<TextMeshProUGUI>().color = activeTextColor;
             }
             else
             {
-                buttons[levelIndex].interactable = false;
-                buttons[levelIndex].gameObject.GetComponentInChildren<TextMeshProUGUI>().color = inactiveTextColor;
+                levelButtons[temp].interactable = false;
+                levelButtons[temp].gameObject.GetComponentInChildren<TextMeshProUGUI>().color = inactiveTextColor;
             }
         }
     }
@@ -58,20 +66,16 @@ public class LevelsManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.W))
         {
             CompleteLevel();
-        }
-
-        // В главное меню, для дебага
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            SceneManager.LoadScene(0);
-        }
+        } 
 
         // Очищаем сохранения, для дебага
         if (Input.GetKeyDown(KeyCode.S))
         {
-            PlayerPrefs.DeleteKey("indexCurrentLevel");
+            PlayerPrefs.DeleteKey("currentLevelIndex");
             PlayerPrefs.DeleteKey("numberOfOpenLevels");
             PlayerPrefs.DeleteKey("numberOfLevels");
+            PlayerPrefs.DeleteKey("startSceneIndex");
+            PlayerPrefs.DeleteKey("firstLevelIndex");
             LoadInfo();
         }
     }
@@ -79,30 +83,31 @@ public class LevelsManager : MonoBehaviour
     /// <summary> This method should call when completing any level. </summary>
     public void CompleteLevel()
     {
-        LoadInfo();
-
-        if (indexCurrentLevel == numberOfOpenLevels && indexCurrentLevel < numberOfLevels)
+        if (currentLevelIndex + 1 == numberOfOpenLevels && currentLevelIndex + 1 < numberOfLevels)
         {
+            Debug.Log("Первое");
+            currentLevelIndex++;
             numberOfOpenLevels++;
-            indexCurrentLevel++;
+            SaveInfo();
+            AsyncSceneLoader.LoadScene(firstLevelIndex + currentLevelIndex);
         }
-        else if (indexCurrentLevel < numberOfOpenLevels)
+        else if (currentLevelIndex + 1 < numberOfOpenLevels)
         {
-            indexCurrentLevel++;
+            Debug.Log("Второе");
+            currentLevelIndex++;
+            SaveInfo();
+            AsyncSceneLoader.LoadScene(firstLevelIndex + currentLevelIndex);
         }
-
-        SaveInfo();
-
-        SceneManager.LoadScene(indexCurrentLevel);
     }
 
-    private void ToLevel(int levelIndex)
+    /// <summary> Moves to level with 'levelID' index. Indexing starts at 0. </summary>
+    private void ToLevel(int levelID)
     {
-        if (levelIndex >= 0 && levelIndex <= numberOfOpenLevels)
+        if (levelID >= 0 && levelID < numberOfOpenLevels)
         {
-            indexCurrentLevel = levelIndex;
+            currentLevelIndex = levelID;
             SaveInfo();
-            SceneManager.LoadScene(indexCurrentLevel);
+            AsyncSceneLoader.LoadScene(firstLevelIndex + levelID);
         }
         else
         {
@@ -112,19 +117,33 @@ public class LevelsManager : MonoBehaviour
 
     private void LoadInfo()
     {
-        // Set the value to 0, since we are now at the 0 starting scene.
-        indexCurrentLevel = PlayerPrefs.GetInt("indexCurrentLevel", 0);
-        // Set the value to 0, because only the first level is available to us.
-        numberOfOpenLevels = PlayerPrefs.GetInt("numberOfOpenLevels", 1);
-        // Set the value to 0 of buttons length.
-        numberOfLevels = PlayerPrefs.GetInt("numberOfLevels", buttons != null && buttons.Length != 0 ? buttons.Length : 0);
+        // Set default values if they are not already set.
+        if (!PlayerPrefs.HasKey("startSceneIndex")) PlayerPrefs.SetInt("startSceneIndex", startSceneIndex);
+        if (!PlayerPrefs.HasKey("firstLevelIndex")) PlayerPrefs.SetInt("firstLevelIndex", firstLevelIndex);
+        if (!PlayerPrefs.HasKey("currentLevelIndex")) PlayerPrefs.SetInt("currentLevelIndex", 0);
+        if (!PlayerPrefs.HasKey("numberOfOpenLevels")) PlayerPrefs.SetInt("numberOfOpenLevels", 1);
+        if (!PlayerPrefs.HasKey("numberOfLevels")) PlayerPrefs.SetInt("numberOfLevels", levelButtons != null && levelButtons.Length != 0 ? levelButtons.Length : 0);
+
+        // Load saved values.
+        startSceneIndex = PlayerPrefs.GetInt("startSceneIndex");
+        firstLevelIndex = PlayerPrefs.GetInt("firstLevelIndex");
+        currentLevelIndex = PlayerPrefs.GetInt("currentLevelIndex");
+        numberOfOpenLevels = PlayerPrefs.GetInt("numberOfOpenLevels");
+        numberOfLevels = PlayerPrefs.GetInt("numberOfLevels");
     }
 
     private void SaveInfo()
     {
+        PlayerPrefs.SetInt("startSceneIndex", startSceneIndex);
+        PlayerPrefs.SetInt("firstLevelIndex", firstLevelIndex);
+        PlayerPrefs.SetInt("currentLevelIndex", currentLevelIndex);
         PlayerPrefs.SetInt("numberOfOpenLevels", numberOfOpenLevels);
-        PlayerPrefs.SetInt("indexCurrentLevel", indexCurrentLevel);
-        if(buttons != null && buttons.Length != 0) PlayerPrefs.SetInt("numberOfLevels", buttons.Length);
+        if(levelButtons != null && levelButtons.Length != 0) PlayerPrefs.SetInt("numberOfLevels", levelButtons.Length);
         PlayerPrefs.Save();
+    }
+
+    public void LoadStartMenu()
+    {
+        AsyncSceneLoader.LoadScene(startSceneIndex);
     }
 }
