@@ -85,7 +85,6 @@ public class LevelsManager : MonoBehaviour
     {
         if (currentLevelIndex + 1 == numberOfOpenLevels && currentLevelIndex + 1 < numberOfLevels)
         {
-            Debug.Log("Первое");
             currentLevelIndex++;
             numberOfOpenLevels++;
             SaveInfo();
@@ -93,10 +92,13 @@ public class LevelsManager : MonoBehaviour
         }
         else if (currentLevelIndex + 1 < numberOfOpenLevels)
         {
-            Debug.Log("Второе");
             currentLevelIndex++;
             SaveInfo();
             AsyncSceneLoader.LoadScene(firstLevelIndex + currentLevelIndex);
+        }
+        else if (numberOfLevels == numberOfOpenLevels)
+        {
+            LoadStartMenu();
         }
     }
 
@@ -108,10 +110,6 @@ public class LevelsManager : MonoBehaviour
             currentLevelIndex = levelID;
             SaveInfo();
             AsyncSceneLoader.LoadScene(firstLevelIndex + levelID);
-        }
-        else
-        {
-            Debug.Log("Извиняемся, данная игра находиться на стадии разработки, по этому часть уровней ещё не проработана.");
         }
     }
 

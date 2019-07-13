@@ -1,122 +1,113 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class AudioManager : MonoBehaviour
 {
-    public static AudioManager instance;
+    private static AudioManager _instance;
 
-    public AudioSource audioSource;
-    public AudioClip[] backgroundMusic;
+    public static AudioManager Instance
+    {
+        get
+        {
+            if (_instance != null)
+            {
+                return _instance;
+            }
 
-    public Slider musicSlider;
-    public Slider sfxSlider;
+            return new GameObject("SoundManager").AddComponent<AudioSource>().gameObject.AddComponent<AudioManager>();
+        }
+    }
 
-    public bool start= false;
-    public bool stop = false;
+    private List<AudioClip> _backgroundClips = new List<AudioClip>();
+
+    private AudioSource _audioSource;
 
     private int _indexOfLastClip;
     private int _indexOfNewClip;
 
-    private float _lastMusicVolume;
-    private float _lastSfxVolume;
-
-    private void Awake()
+    void Awake()
     {
-        if (instance != null) Destroy(gameObject);
-        instance = this;
+        if (_instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        _instance = this;
+        _audioSource = GetComponent<AudioSource>();
+        DontDestroyOnLoad(gameObject);
     }
 
-    private void Start()
-    { 
-        if (musicSlider != null && sfxSlider != null)
+    public void SetMusicVolume(float volume)
+    {
+        _audioSource.volume = volume;
+        PlayerPrefs.SetFloat("musicVolume", volume);
+        PlayerPrefs.Save();
+    }
+
+    public void SetSfxVolume(float volume)
+    {
+        PlayerPrefs.SetFloat("sfxVolume", volume);
+        PlayerPrefs.Save();
+    }
+
+    public float GetMusicVolume()
+    {
+        return PlayerPrefs.GetFloat("musicVolume", 1);
+    }
+
+    public float GetSfxVolume()
+    {
+        return PlayerPrefs.GetFloat("sfxVolume", 1);
+    }
+
+    public void SetBackgroundClips(params string[] clipNames)
+    {
+        _backgroundClips.Clear();
+        foreach(string clipName in clipNames)
         {
-            if (PlayerPrefs.HasKey("musicVolume") && PlayerPrefs.HasKey("sfxVolume"))
+            AudioClip sound = Resources.Load<AudioClip>(Path.Combine("AudioManager/Music/", clipName));
+
+            if (sound != null)
             {
-                musicSlider.value = PlayerPrefs.GetFloat("musicVolume");
-                sfxSlider.value = PlayerPrefs.GetFloat("sfxVolume");
+                _backgroundClips.Add(sound);
             }
-
-            musicSlider.onValueChanged.AddListener((value) => SetMusicVolume(value));
-            sfxSlider.onValueChanged.AddListener((value) => SetSfxVolume(value));
-
-            _lastMusicVolume = musicSlider.value;
-            _lastSfxVolume = sfxSlider.value;
-        }
-    }
-
-    private void SetMusicVolume(float volume)
-    {
-        // This is done for optimization. Thus, we save fewer times.
-        // We still will not hear the difference in 0.05. :)
-        // So why save once again?
-        if (Mathf.Abs(_lastMusicVolume - musicSlider.value) > 0.05)
-        {
-            audioSource.volume = volume;
-            PlayerPrefs.SetFloat("musicVolume", volume);
-            PlayerPrefs.Save();
-            _lastMusicVolume = musicSlider.value;
-        }       
-    }
-
-    private void SetSfxVolume(float volume)
-    {
-        // This is done for optimization. Thus, we save fewer times.
-        // We still will not hear the difference in 0.05. :)
-        // So why save once again?
-        if (Mathf.Abs(_lastSfxVolume - sfxSlider.value) > 0.05)
-        {
-            PlayerPrefs.SetFloat("sfxVolume", volume);
-            PlayerPrefs.Save();
-            _lastSfxVolume = sfxSlider.value;
-        }
-    }
-
-    private void Update()
-    {
-        if(stop)
-        {
-            stop = false;
-            StopPlayingBackGroundMusic(true);
-        }
-
-        if (start)
-        {
-            start = false;
-            StartPlayingBackGroundMusic();
-        }
-    }
-
-    public void StartPlayingBackGroundMusic()
-    {
-        if (backgroundMusic.Length > 1)
-        {
-            for (int i = 0; i < backgroundMusic.Length; i++)
+            else
             {
-                if (backgroundMusic[i] == null) throw new AudioManagerException("В массиве для фоновой музыки не должно быть пустых элементов.");
+                throw new AudioManagerException($"Клипа '{clipName}' не было найдено в папке AudioManager/Music.");
             }
+        }
+    }
 
+    public void StartPlayingBackgroundMusic()
+    {
+        if (_backgroundClips.Count > 1)
+        {
             StartCoroutine("StartPlayingRandomMusic");
         }
-        else throw new AudioManagerException("Вы должно добавить минимум 2 мелодии для фоновой музыки.");
+        else
+        {
+            throw new AudioManagerException("Вы должно добавить минимум 2 мелодии для фоновой музыки.");
+        }
     }
 
-    public void StopPlayingBackGroundMusic(bool instantly)
+    public void StopPlayingBackgroundMusic(bool instantly)
     {
-        if (instantly) audioSource.Stop();
+        if (instantly) _audioSource.Stop();
         StopCoroutine("StartPlayingRandomMusic");
         _indexOfLastClip = _indexOfNewClip;
     }
 
     private IEnumerator StartPlayingRandomMusic()
     {
-        while (_indexOfLastClip == _indexOfNewClip) _indexOfNewClip = Random.Range(0, backgroundMusic.Length);
+        while (_indexOfLastClip == _indexOfNewClip) _indexOfNewClip = Random.Range(0, _backgroundClips.Count);
 
-        audioSource.clip = backgroundMusic[_indexOfNewClip];
-        audioSource.Play();
+        _audioSource.clip = _backgroundClips[_indexOfNewClip];
+        _audioSource.Play();
 
-        yield return new WaitForSeconds(audioSource.clip.length);
+        yield return new WaitForSeconds(_audioSource.clip.length);
 
         _indexOfLastClip = _indexOfNewClip;
         StartCoroutine("StartPlayingRandomMusic");
@@ -124,15 +115,15 @@ public class AudioManager : MonoBehaviour
 
     public static void PlaySound(string soundName)
     {
-        AudioClip sound = Resources.Load<AudioClip>(Path.Combine("Audio/SFX/", soundName));
+        AudioClip sound = Resources.Load<AudioClip>(Path.Combine("AudioManager/Sounds/", soundName));
 
         if (sound != null)
         {
-            AudioSource.PlayClipAtPoint(sound, Vector3.zero, PlayerPrefs.GetFloat("sfxVolume"));
+            AudioSource.PlayClipAtPoint(sound, Vector3.zero, _instance.GetSfxVolume());
         }
         else
         {
-            throw new AudioManagerException($"Звука '{soundName}' не было найдено в папке Audio/SFX.");
+            throw new AudioManagerException($"Звука '{soundName}' не было найдено в папке AudioManager/Sounds.");
         }
     }
 }
