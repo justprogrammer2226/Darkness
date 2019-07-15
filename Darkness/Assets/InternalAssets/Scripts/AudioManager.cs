@@ -21,6 +21,8 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    public bool IsPlaying { get; private set; }
+
     private List<AudioClip> _backgroundClips = new List<AudioClip>();
 
     private AudioSource _audioSource;
@@ -28,7 +30,7 @@ public class AudioManager : MonoBehaviour
     private int _indexOfLastClip;
     private int _indexOfNewClip;
 
-    void Awake()
+    private void Awake()
     {
         if (_instance != null)
         {
@@ -37,6 +39,8 @@ public class AudioManager : MonoBehaviour
         }
         _instance = this;
         _audioSource = GetComponent<AudioSource>();
+        IsPlaying = false;
+        _audioSource.volume = GetMusicVolume();
         DontDestroyOnLoad(gameObject);
     }
 
@@ -85,6 +89,7 @@ public class AudioManager : MonoBehaviour
     {
         if (_backgroundClips.Count > 1)
         {
+            IsPlaying = true;
             StartCoroutine("StartPlayingRandomMusic");
         }
         else
@@ -95,6 +100,7 @@ public class AudioManager : MonoBehaviour
 
     public void StopPlayingBackgroundMusic(bool instantly)
     {
+        IsPlaying = false;
         if (instantly) _audioSource.Stop();
         StopCoroutine("StartPlayingRandomMusic");
         _indexOfLastClip = _indexOfNewClip;
